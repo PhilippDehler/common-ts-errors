@@ -55,6 +55,16 @@ By unrolling the recursion like this we can increase the max recursion depth by 
 Type produces a tuple type that is too large to represent.(2799)
 ```
 
+Note: This also works with strings.
+
+```ts
+//prettier-ignore
+type Replace<T extends string, ReplaceValue, Agg extends string = ""> =
+  T extends `${infer _}${infer _}${infer Tail}`
+    ? Replace<Tail, `${ReplaceValue}${ReplaceValue}${Agg}`>
+    : T["length"] extends 1 ? `${ReplaceValue}${Agg}` : Agg;
+```
+
 # The second 🧙‍♂️-trick
 
 Internally, TypeScript keeps track of the recursion limit using a counter. Resetting this counter can be achieved by utilizing an intersection type, effectively resetting the counter to zero. This workaround can be used multiple times, but keep in mind that it can slow down the compiler:
