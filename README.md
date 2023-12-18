@@ -29,7 +29,7 @@ The first obvious solution involves transforming the type to be tail-recursive:
 //prettier-ignore
 type Replace<T extends any[], ReplaceValue, Agg extends ReplaceValue[] = []> = 
 T extends [any, ...infer Tail]
-  ? Replace_TailRecursion<Tail, [ReplaceValue, ...Agg]>
+  ? Replace<Tail, [ReplaceValue, ...Agg]>
   : Agg;
 ```
 
@@ -45,7 +45,7 @@ The initial workaround involves unrolling the loop or recursion. Similar to opti
 //prettier-ignore
 type Replace<T extends any[],ReplaceValue,Agg extends any[] = []> = 
 T extends [any, any, ...infer Tail]
-  ? Replace_TailRecursion_Unroll<Tail, [ReplaceValue, ReplaceValue, ...Agg]>
+  ? Replace<Tail, [ReplaceValue, ReplaceValue, ...Agg]>
   : T["length"] extends 1 ? [ReplaceValue, ...Agg] : Agg;
 ```
 
@@ -72,9 +72,9 @@ Internally, TypeScript keeps track of the recursion limit using a counter. Reset
 ```ts
 //prettier-ignore
 type Replace<T extends any[], ReplaceValue, Agg extends any[] = [], RecursionCount extends any[] = []> = RecursionCount["length"] extends 500
-  ? Replace_TailRecursion_Intersection<T, ReplaceValue, Agg, []> & {} // reset the counter
+  ? Replace<T, ReplaceValue, Agg, []> & {} // reset the counter
   : T extends [any, ...infer Tail]
-    ? Replace_TailRecursion_Intersection<Tail, ReplaceValue, [ReplaceValue, ...Agg], [...RecursionCount, unknown]>
+    ? Replace<Tail, ReplaceValue, [ReplaceValue, ...Agg], [...RecursionCount, unknown]>
     : Agg;
 ```
 
